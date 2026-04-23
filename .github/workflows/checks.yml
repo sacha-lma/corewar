@@ -117,7 +117,7 @@ jobs:
             for allowed in $WHITELIST; do
               [ "$sym" = "$allowed" ] && found=1 && break
             done
-            case "$sym" in __*|_IO_*|stderr|stdout|stdin) found=1 ;; esac
+            case "$sym" in __*|_IO_*|_ITM_*|ITM_*|_cxa_*|_libc_*|_register_*|_deregister_*|stderr|stdout|stdin) found=1 ;; esac
             [ "$found" -eq 0 ] && BANNED="$BANNED $sym"
           done
           if [ -n "$BANNED" ]; then

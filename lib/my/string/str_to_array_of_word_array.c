@@ -7,8 +7,38 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "../../Headers/my.h"
+
+static int my_strcspn(char const *str, char const *reject)
+{
+    int i;
+    int j;
+
+    for (i = 0; str[i]; i++)
+        for (j = 0; reject[j]; j++)
+            if (str[i] == reject[j])
+                return i;
+    return i;
+}
+
+static int my_strspn(char const *str, char const *accept)
+{
+    int i;
+    int j;
+    int found;
+
+    for (i = 0; str[i]; i++) {
+        found = 0;
+        for (j = 0; accept[j]; j++)
+            if (str[i] == accept[j]) {
+                found = 1;
+                break;
+            }
+        if (!found)
+            return i;
+    }
+    return i;
+}
 
 static int check_inputs(char const *str, char const *sep, const char *label)
 {
@@ -59,7 +89,8 @@ static char *dup_segment(char const *str, int len)
         write_error("ERROR: dup_segment: malloc failure\n");
         return NULL;
     }
-    memcpy(seg, str, (size_t)len);
+    for (int i = 0; i < len; i++)
+        seg[i] = str[i];
     seg[len] = '\0';
     return seg;
 }
@@ -75,7 +106,7 @@ static char **fill_slot(char const *str, char const *sep_ext,
         write_error("ERROR: fill_slot: invalid input\\n");
         return NULL;
     }
-    len = (int)strcspn(str, sep_ext);
+    len = my_strcspn(str, sep_ext);
     seg = dup_segment(str, len);
     if (!seg)
         return NULL;
@@ -97,15 +128,15 @@ static char ***loop_filling(char ***arr, char const *str,
         free_array_of_word_array(arr, 0);
         return NULL;
     }
-    str += strspn(str, sep_ext);
+    str += my_strspn(str, sep_ext);
     for (i = 0; i < n; i++) {
         arr[i] = fill_slot(str, sep_ext, sep_int);
         if (!arr[i]) {
             free_array_of_word_array(arr, i);
             return NULL;
         }
-        str += strcspn(str, sep_ext);
-        str += strspn(str, sep_ext);
+        str += my_strcspn(str, sep_ext);
+        str += my_strspn(str, sep_ext);
     }
     arr[n] = NULL;
     return arr;
@@ -119,11 +150,13 @@ static char ***alloc_array(int n)
         write_error("ERROR: alloc_array: invalid size\\n");
         return NULL;
     }
-    arr = calloc((size_t)(n + 1), sizeof(char **));
+    arr = malloc(sizeof(char **) * (size_t)(n + 1));
     if (!arr) {
         write_error("ERROR: alloc_array: malloc failure\n");
         return NULL;
     }
+    for (int i = 0; i <= n; i++)
+        arr[i] = NULL;
     return arr;
 }
 
