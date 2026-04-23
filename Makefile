@@ -9,8 +9,8 @@
 MAKEFLAGS += --no-print-directory
 
 # ─── Project Info ────────────────────────────────────────────────────────
- PROJECT = robot-factory
- NAME	= robot-factory
+ PROJECT = corewar
+ NAME	= corewar
  LIB_NAME = libmy.a
 
 # ─── Sources ─────────────────────────────────────────────────────────────
