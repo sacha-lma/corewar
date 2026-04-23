@@ -1,0 +1,95 @@
+flowchart TB
+
+    START([main]) --> CLI{ac == 2 ?}
+    CLI -- no --> UERR[write_error Usage\nreturn FAILURE]
+    CLI -- yes --> PARSE[parse filepath rf]
+    PARSE --> POK{parse success ?}
+    POK -- no --> CLEAN_FAIL[free_robotfactory rf\nreturn FAILURE]
+    POK -- yes --> WRITE[write_cor outfile rf]
+    WRITE --> EXIT[free_robotfactory rf\nreturn status]
+
+    subgraph P1[Parser phase]
+        direction TB
+        P1A[openator filepath -> raw]
+        P1B[lines = split raw by newline]
+        P1C[file_cntnt = split raw by newline then spaces tabs]
+        P1D[fill_header]
+        P1E[get_body]
+        P1F[header.magic = shift_int COREWAR_EXEC_MAGIC]
+        P1G[header.prog_size = shift_int prog_size]
+        P1A --> P1B --> P1C --> P1D --> P1E --> P1F --> P1G
+    end
+
+    PARSE --> P1
+
+    subgraph P2[Header parsing details]
+        direction TB
+        H1[scan each tokenized line]
+        H2{line starts with .name or .comment ?}
+        H3[extract quoted string]
+        H4[copy to header.prog_name or header.comment]
+        H5[validate required fields and max length]
+        H1 --> H2
+        H2 -- yes --> H3 --> H4 --> H5
+        H2 -- no --> H5
+    end
+
+    P1D --> P2
+
+    subgraph P3[Body parsing and storage]
+        direction TB
+        B1[iterate non-header lines]
+        B2{label declaration ?}
+        B3[store_label name offset\nappend to rf.labels]
+        B4[get opcode index]
+        B5[parse params list]
+        B6[build instr_t node\nopcode params nb_params offset]
+        B7[append instr node to rf.instrs]
+        B8[offset += get_instr_size instr]
+        B9[rf.prog_size = final offset]
+        B1 --> B2
+        B2 -- yes --> B3 --> B4
+        B2 -- no --> B4
+        B4 --> B5 --> B6 --> B7 --> B8 --> B9
+    end
+
+    P1E --> P3
+
+    subgraph DS[In-memory structures]
+        direction TB
+        D1[robotfactory_t\nheader instrs labels prog_size]
+        D2[instr_t linked list\nopcode params next]
+        D3[node_t labels list\nlabel_t name pos]
+        D4[param_t\ntype value label is_label]
+        D1 --> D2
+        D1 --> D3
+        D2 --> D4
+    end
+
+    P3 --> DS
+
+    subgraph E1[Encoding phase]
+        direction TB
+        E1A[fwrite header_t]
+        E1B[for each instr: write opcode]
+        E1C{has coding byte ?}
+        E1D[write coding byte bits\nREG 01 DIR 10 IND 11]
+        E1E[for each param:\nresolve label if needed\nwrite big-endian by size]
+        E1A --> E1B --> E1C
+        E1C -- yes --> E1D --> E1E
+        E1C -- no --> E1E
+    end
+
+    WRITE --> E1
+
+    subgraph C1[Cleanup phase]
+        direction TB
+        C1A[free each instr_t]
+        C1B[free each param label string]
+        C1C[free each label_t name and node_t]
+        C1D[reset rf pointers]
+        C1A --> C1B --> C1C --> C1D
+    end
+
+    CLEAN_FAIL --> C1
+    EXIT --> C1
