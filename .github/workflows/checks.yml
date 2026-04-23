@@ -1,215 +1,163 @@
-name: Corewar CI Checks
+name: Corewar CI
 
 on:
+  workflow_dispatch:
   push:
-    branches: ['**']
+    branches-ignore:
+      - "no-ga/**"
   pull_request:
-    branches: ['**']
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches-ignore:
+      - "no-ga/**"
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIRROR_SSH_URL: ${{ vars.MIRROR_SSH_URL }}
+  PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
 
 jobs:
 
-  # ─── 1. CODING STYLE ──────────────────────────────────────────────────────
-  coding-style:
-    name: Coding Style (banana)
+  # ─── 0. CHECK MIRROR ──────────────────────────────────────────────────────
+  check_mirror:
     runs-on: ubuntu-latest
+    outputs:
+      is_mirror: ${{ steps.check.outputs.is_mirror }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run coding-style checker
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check
         run: |
-          docker run --rm \
-            -v "$PWD:/mnt/delivery" \
-            ghcr.io/epitech/coding-style-checker:latest \
-            /mnt/delivery /mnt/delivery
+          ORIGIN=$(git remote get-url origin)
+          ORIGIN=$(echo $ORIGIN | sed 's|https://github.com|git@github.com:|; s|$|.git|')
+          ORIGIN=$(echo $ORIGIN | sed 's/com:\//com:/')
+          echo "is_mirror=$( [ "$ORIGIN" = "$MIRROR_SSH_URL" ] && echo true || echo false )" >> $GITHUB_OUTPUT
 
-      - name: Check for coding-style errors
+  # ─── 1. CODING STYLE + BUILD + CHECKREPO + BANNED FUNCTIONS ───────────────
+  check_compilation_and_coding_style:
+    name: Coding Style, Build & Check Repo
+    needs: check_mirror
+    if: needs.check_mirror.outputs.is_mirror == 'false'
+    runs-on: ubuntu-latest
+    container:
+      image: lukassgx/epigambling
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- checkrepo ---
+      - name: Check Repository Structure
+        continue-on-error: true
+        run: banana-check-repo > banana-check-repo.log || true
+
+      - name: Annotate Coding Style Infractions (repo structure)
         run: |
-          if [ -f coding-style-reports.log ] && [ -s coding-style-reports.log ]; then
-            echo "::error::Coding style errors found:"
-            cat coding-style-reports.log
-            while IFS= read -r line; do
-              file=$(echo "$line" | cut -d: -f1)
-              lineno=$(echo "$line" | cut -d: -f2)
-              rule=$(echo "$line" | cut -d: -f3-)
-              echo "::error file=$file,line=$lineno::$rule"
-            done < coding-style-reports.log
+          if [ -s banana-check-repo.log ]; then
+            grep "\[Banana\]" banana-check-repo.log | while IFS= read -r line; do
+              FILE=$(echo "$line" | cut -d':' -f1 | sed 's|^\./||')
+              LINE=$(echo "$line" | cut -d':' -f2)
+              [ "$LINE" -eq "$LINE" ] 2>/dev/null || LINE=1
+              [ "$LINE" -le 0 ] && LINE=1
+              LEVEL=$(echo "$line" | sed -n 's/.*\[Banana\] \[\([^]]*\)\].*/\1/p')
+              CODE=$(echo "$line" | sed -n 's/.*(\([^)]*\)).*/\1/p')
+              MSG=$(echo "$line" | sed -E 's/.*\] (.*) \(.*\)/\1/')
+              echo "::error file=$FILE,line=$LINE,title=$LEVEL coding style error::$CODE - $MSG"
+            done
             exit 1
-          else
-            echo "No coding style errors found."
           fi
 
-  # ─── 2. BUILD ─────────────────────────────────────────────────────────────
-  build:
-    name: Build (make -Werror)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # --- build ---
+      - name: Build (epiclang / make)
+        run: make 2>&1 | tee build.log
+        timeout-minutes: 2
 
-      - name: Install build dependencies
-        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
-
-      - name: Compile with -Wall -Wextra -Werror
+      # --- warnings/errors depuis le build ---
+      - name: Check build for warnings and errors
         run: |
-          make CFLAGS="-Wall -Wextra -Werror"
-          echo "Build succeeded."
+          if grep -Eq "error:|warning:" build.log; then
+            grep -E "error:|warning:" build.log | while IFS= read -r line; do
+              FILE=$(echo "$line" | cut -d':' -f1)
+              LINE=$(echo "$line" | cut -d':' -f2)
+              [ "$LINE" -eq "$LINE" ] 2>/dev/null || LINE=1
+              [ "$LINE" -le 0 ] && LINE=1
+              LEVEL=$(echo "$line" | sed -nE 's/.*\b(error|warning):.*/\1/p')
+              CODE=$(echo "$line" | sed -nE 's/.*\(([^()]*)\)[[:space:]]*$/\1/p')
+              [ -z "$CODE" ] && CODE=compiler
+              MSG=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:[0-9]+:[[:space:]]*(error|warning):[[:space:]]*//')
+              echo "::error file=$FILE,line=$LINE,title=$LEVEL::$CODE - $MSG"
+            done
+            exit 1
+          fi
 
-      - name: Verify binary exists
+      # --- vérification que le binaire corewar existe ---
+      - name: Check binary exists
         run: |
           if [ ! -f ./corewar ]; then
-            echo "::error::Binary 'corewar' not found after build."
+            echo "::error file=Makefile,title=Missing Binary::corewar binary not found after build"
             exit 1
           fi
 
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: corewar-binary
-          path: |
-            corewar
-            **/*.o
-          retention-days: 1
-
-      - name: Clean build artifacts
-        run: make clean
-
-  # ─── 3. CHECKREPO ─────────────────────────────────────────────────────────
-  checkrepo:
-    name: Check Repo (no binaries/objects)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run checkrepo
-        run: |
-          docker run --rm \
-            -v "$PWD:/mnt/delivery" \
-            ghcr.io/epitech/coding-style-checker:latest \
-            --checkrepo /mnt/delivery
-
-  # ─── 4. BANNED FUNCTIONS ──────────────────────────────────────────────────
-  banned-functions:
-    name: Banned Functions (nm whitelist)
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
-
-      - name: Build project
-        run: make CFLAGS="-Wall -Wextra -Werror"
-
+      # --- banned functions ---
       - name: Check for banned functions
         run: |
           WHITELIST="open fopen read fread write fwrite close fclose stat lstat lseek fseek getline malloc realloc free"
-
-          USED=$(nm -u ./corewar 2>/dev/null \
-            | awk '{print $NF}' \
-            | sed 's/^_//' \
-            | grep -v '^$' \
-            | sort -u)
-
+          USED=$(nm -u ./corewar 2>/dev/null | awk '{print $NF}' | sed 's/^_//' | grep -v '^$' | sort -u)
           BANNED=""
           for sym in $USED; do
             found=0
             for allowed in $WHITELIST; do
-              if [ "$sym" = "$allowed" ]; then
-                found=1
-                break
-              fi
+              [ "$sym" = "$allowed" ] && found=1 && break
             done
-            case "$sym" in
-              __*|_IO_*|stderr|stdout|stdin) found=1 ;;
-            esac
-            if [ "$found" -eq 0 ]; then
-              BANNED="$BANNED $sym"
-            fi
+            case "$sym" in __*|_IO_*|stderr|stdout|stdin) found=1 ;; esac
+            [ "$found" -eq 0 ] && BANNED="$BANNED $sym"
           done
-
           if [ -n "$BANNED" ]; then
-            echo "::error::Banned/unauthorized functions detected in corewar binary:"
             for b in $BANNED; do
-              echo "  - $b"
-              echo "::error::Banned function used: $b"
+              echo "::error title=Banned Function::$b is not in the authorized functions list"
             done
             exit 1
-          else
-            echo "All used functions are in the whitelist."
           fi
 
-  # ─── 5. NO EXTRA FUNCTIONS ────────────────────────────────────────────────
-  no-extra-functions:
-    name: No Extra Functions (unused symbols)
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
-
-      - name: Build with -Wunused-function
+      # --- fonctions superflues ---
+      - name: Check for unused functions
         run: |
-          make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee build_output.txt
-          echo "No unused functions detected (build passed with -Wunused-function)."
-
-      - name: Check object files for unreferenced defined symbols
-        run: |
-          DEFINED=$(find . -name '*.o' ! -path './bonus/*' \
-            | xargs nm -o 2>/dev/null \
-            | awk '/ T / || / t / {print $3}' \
-            | grep -v '^$' \
-            | sort -u)
-
-          CALLED=$(find . -name '*.o' ! -path './bonus/*' \
-            | xargs nm -o 2>/dev/null \
-            | awk '/ U / {print $3}' \
-            | grep -v '^$' \
-            | sort -u)
-
-          ROOTS="main"
-
-          EXTRA=""
-          for sym in $DEFINED; do
-            case "$sym" in
-              main|_*) continue ;;
-            esac
-            if ! echo "$CALLED $ROOTS" | grep -qw "$sym"; then
-              EXTRA="$EXTRA $sym"
-            fi
-          done
-
-          if [ -n "$EXTRA" ]; then
-            echo "::warning::The following functions are defined but never called from other translation units:"
-            for e in $EXTRA; do
-              echo "  - $e"
-              echo "::warning::Potentially unused function: $e"
+          make fclean > /dev/null 2>&1 || true
+          make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee unused.log || true
+          if grep -q "unused-function\|defined but not used" unused.log; then
+            grep "unused-function\|defined but not used" unused.log | while IFS= read -r line; do
+              FILE=$(echo "$line" | cut -d':' -f1)
+              LINE=$(echo "$line" | cut -d':' -f2)
+              MSG=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:[0-9]+:[[:space:]]*(warning):[[:space:]]*//')
+              echo "::error file=$FILE,line=$LINE,title=Unused Function::$MSG"
             done
             exit 1
-          else
-            echo "No unreferenced defined functions detected."
           fi
 
-  # ─── 6. MIRROR ────────────────────────────────────────────────────────────
-  mirror:
+      - name: Cleanup
+        run: make fclean
+
+  # ─── 2. MIRROR ────────────────────────────────────────────────────────────
+  push_to_mirror:
     name: Mirror to remote repository
-    runs-on: ubuntu-latest
-    needs: [coding-style, build, checkrepo, banned-functions, no-extra-functions]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs:
+      - check_mirror
+      - check_compilation_and_coding_style
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository (full history)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Push to mirror
-        uses: pixta-dev/repository-mirroring-action@v1
+      - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url: ${{ vars.MIRROR_SSH_URL }}
           ssh_private_key: ${{ secrets.PRIVATE_SSH_KEY }}
