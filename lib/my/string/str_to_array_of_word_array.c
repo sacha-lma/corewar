@@ -9,34 +9,33 @@
 #include <stdlib.h>
 #include "../../Headers/my.h"
 
+static int char_in_set(char c, char const *set)
+{
+    int j;
+
+    for (j = 0; set[j]; j++)
+        if (c == set[j])
+            return 1;
+    return 0;
+}
+
 static int my_strcspn(char const *str, char const *reject)
 {
     int i;
-    int j;
 
     for (i = 0; str[i]; i++)
-        for (j = 0; reject[j]; j++)
-            if (str[i] == reject[j])
-                return i;
+        if (char_in_set(str[i], reject))
+            return i;
     return i;
 }
 
 static int my_strspn(char const *str, char const *accept)
 {
     int i;
-    int j;
-    int found;
 
-    for (i = 0; str[i]; i++) {
-        found = 0;
-        for (j = 0; accept[j]; j++)
-            if (str[i] == accept[j]) {
-                found = 1;
-                break;
-            }
-        if (!found)
+    for (i = 0; str[i]; i++)
+        if (!char_in_set(str[i], accept))
             return i;
-    }
     return i;
 }
 
