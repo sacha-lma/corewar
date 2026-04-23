@@ -108,7 +108,6 @@ jobs:
         run: |
           WHITELIST="open fopen read fread write fwrite close fclose stat lstat lseek fseek getline malloc realloc free"
 
-          # Collect undefined external symbols from the binary (calls to libc, etc.)
           USED=$(nm -u ./corewar 2>/dev/null \
             | awk '{print $NF}' \
             | sed 's/^_//' \
@@ -124,7 +123,6 @@ jobs:
                 break
               fi
             done
-            # Ignore internal compiler/linker symbols
             case "$sym" in
               __*|_IO_*|stderr|stdout|stdin) found=1 ;;
             esac
@@ -159,32 +157,26 @@ jobs:
       - name: Build with -Wunused-function
         run: |
           make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee build_output.txt
-          # -Werror already turns unused-function warnings into errors,
-          # so a successful build means no unused functions.
           echo "No unused functions detected (build passed with -Wunused-function)."
 
       - name: Check object files for unreferenced defined symbols
         run: |
-          # Collect all defined text symbols across object files
           DEFINED=$(find . -name '*.o' ! -path './bonus/*' \
             | xargs nm -o 2>/dev/null \
             | awk '/ T / || / t / {print $3}' \
             | grep -v '^$' \
             | sort -u)
 
-          # Collect all undefined (called) symbols across object files
           CALLED=$(find . -name '*.o' ! -path './bonus/*' \
             | xargs nm -o 2>/dev/null \
             | awk '/ U / {print $3}' \
             | grep -v '^$' \
             | sort -u)
 
-          # Also add entry point / known roots
           ROOTS="main"
 
           EXTRA=""
           for sym in $DEFINED; do
-            # Skip main and static-linkage helpers starting with underscore
             case "$sym" in
               main|_*) continue ;;
             esac
@@ -199,9 +191,26 @@ jobs:
               echo "  - $e"
               echo "::warning::Potentially unused function: $e"
             done
-            # Warn only — some static helpers won't appear in U entries.
-            # Remove 'exit 1' below if you want this to be non-blocking.
             exit 1
           else
             echo "No unreferenced defined functions detected."
           fi
+
+  # ─── 6. MIRROR ────────────────────────────────────────────────────────────
+  mirror:
+    name: Mirror to remote repository
+    runs-on: ubuntu-latest
+    needs: [coding-style, build, checkrepo, banned-functions, no-extra-functions]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to mirror
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ vars.MIRROR_SSH_URL }}
+          ssh_private_key: ${{ secrets.PRIVATE_SSH_KEY }}
+          ssh_username: git
