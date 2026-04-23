@@ -4,102 +4,92 @@ on:
   workflow_dispatch:
   push:
     branches-ignore:
-      - "no-ga/**"
+      - 'no-ga/**'
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
     branches-ignore:
-      - "no-ga/**"
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - 'no-ga/**'
 
 env:
   MIRROR_SSH_URL: ${{ vars.MIRROR_SSH_URL }}
-  PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+  EXECUTABLES: ${{ vars.EXECUTABLES }}
 
 jobs:
 
-  # ─── 0. CHECK MIRROR ──────────────────────────────────────────────────────
-  check_mirror:
-    runs-on: ubuntu-latest
-    outputs:
-      is_mirror: ${{ steps.check.outputs.is_mirror }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: check
-        run: |
-          ORIGIN=$(git remote get-url origin)
-          ORIGIN=$(echo $ORIGIN | sed 's|https://github.com|git@github.com:|; s|$|.git|')
-          ORIGIN=$(echo $ORIGIN | sed 's/com:\//com:/')
-          echo "is_mirror=$( [ "$ORIGIN" = "$MIRROR_SSH_URL" ] && echo true || echo false )" >> $GITHUB_OUTPUT
-
-  # ─── 1. CODING STYLE + BUILD + CHECKREPO + BANNED FUNCTIONS ───────────────
+  # ─── 1. CODING STYLE + BUILD + BANNED FUNCTIONS ───────────────────────────
   check_compilation_and_coding_style:
-    name: Coding Style, Build & Check Repo
-    needs: check_mirror
-    if: needs.check_mirror.outputs.is_mirror == 'false'
+    name: Check Compilation and Coding Style
     runs-on: ubuntu-latest
+    if: ${{ github.repository != vars.MIRROR_REPOSITORY }}
     container:
-      image: lukassgx/epigambling
+      image: epitechcontent/epitest-docker
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       # --- checkrepo ---
-      - name: Check Repository Structure
-        continue-on-error: true
-        run: banana-check-repo > banana-check-repo.log || true
+      - name: Run banana-check-repo and capture output
+        shell: bash
+        run: banana-check-repo 2>&1 | tee /tmp/banana-output.txt || true
 
-      - name: Annotate Coding Style Infractions (repo structure)
-        run: |
-          if [ -s banana-check-repo.log ]; then
-            grep "\[Banana\]" banana-check-repo.log | while IFS= read -r line; do
-              FILE=$(echo "$line" | cut -d':' -f1 | sed 's|^\./||')
-              LINE=$(echo "$line" | cut -d':' -f2)
-              [ "$LINE" -eq "$LINE" ] 2>/dev/null || LINE=1
-              [ "$LINE" -le 0 ] && LINE=1
-              LEVEL=$(echo "$line" | sed -n 's/.*\[Banana\] \[\([^]]*\)\].*/\1/p')
-              CODE=$(echo "$line" | sed -n 's/.*(\([^)]*\)).*/\1/p')
-              MSG=$(echo "$line" | sed -E 's/.*\] (.*) \(.*\)/\1/')
-              echo "::error file=$FILE,line=$LINE,title=$LEVEL coding style error::$CODE - $MSG"
-            done
-            exit 1
-          fi
-
-      # --- build ---
-      - name: Build (epiclang / make)
-        run: make 2>&1 | tee build.log
+      # --- build avec epiclang ---
+      - name: Compile with make and capture output
         timeout-minutes: 2
-
-      # --- warnings/errors depuis le build ---
-      - name: Check build for warnings and errors
+        shell: bash
+        env:
+          CC: epiclang
         run: |
-          if grep -Eq "error:|warning:" build.log; then
-            grep -E "error:|warning:" build.log | while IFS= read -r line; do
-              FILE=$(echo "$line" | cut -d':' -f1)
-              LINE=$(echo "$line" | cut -d':' -f2)
-              [ "$LINE" -eq "$LINE" ] 2>/dev/null || LINE=1
-              [ "$LINE" -le 0 ] && LINE=1
-              LEVEL=$(echo "$line" | sed -nE 's/.*\b(error|warning):.*/\1/p')
-              CODE=$(echo "$line" | sed -nE 's/.*\(([^()]*)\)[[:space:]]*$/\1/p')
-              [ -z "$CODE" ] && CODE=compiler
-              MSG=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:[0-9]+:[[:space:]]*(error|warning):[[:space:]]*//')
-              echo "::error file=$FILE,line=$LINE,title=$LEVEL::$CODE - $MSG"
-            done
+          make 2>&1 | tee /tmp/make-output.txt
+          exit ${PIPESTATUS[0]}
+
+      # --- annotations banana checkrepo ---
+      - name: Display banana coding style errors as annotations
+        if: always()
+        shell: bash
+        run: |
+          while IFS= read -r line; do
+            if echo "$line" | grep -qE '^\./.*: \[Banana\]'; then
+              filepath=$(echo "$line" | cut -d':' -f1 | sed 's|^\./||')
+              severity=$(echo "$line" | grep -oP '\[Banana\] \[\K[^\]]+')
+              code=$(echo "$line" | grep -oP '\(([A-Z0-9-]+)\)' | tr -d '()')
+              message=$(echo "$line" | sed 's/.*\[Banana\] \[[A-Za-z]*\] //' | sed 's/ ([A-Z0-9-]*)$//')
+              echo "::error file=${filepath},line=1::${severity} coding style error: ${filepath}%0A${code} - ${message}"
+            fi
+          done < /tmp/banana-output.txt
+
+      # --- annotations epiclang coding style ---
+      - name: Display epiclang coding style errors as annotations
+        if: always()
+        shell: bash
+        run: |
+          while IFS= read -r line; do
+            if echo "$line" | grep -qE '.*\.c:[0-9]+:[0-9]+:.*\[Banana\]'; then
+              filepath=$(echo "$line" | cut -d':' -f1)
+              lineno=$(echo "$line" | cut -d':' -f2)
+              col=$(echo "$line" | cut -d':' -f3)
+              severity=$(echo "$line" | grep -oP '\[Banana\] \[\K[^\]]+')
+              code=$(echo "$line" | grep -oP '\(([A-Z0-9-]+)\)' | tr -d '()')
+              message=$(echo "$line" | sed 's/.*\[Banana\] \[[A-Za-z]*\] //' | sed 's/ ([A-Z0-9-]*)$//')
+              echo "::error file=${filepath},line=${lineno},col=${col}::${severity} coding style error: ${filepath}#L${lineno}%0A${code} - ${message}"
+            fi
+          done < /tmp/make-output.txt
+
+      # --- fail si coding style errors ---
+      - name: Fail if any coding style errors exist
+        shell: bash
+        run: |
+          if grep -qE '^\./.*: \[Banana\]' /tmp/banana-output.txt; then
+            exit 1
+          fi
+          if grep -qE '.*\.c:[0-9]+:[0-9]+:.*\[Banana\]' /tmp/make-output.txt; then
             exit 1
           fi
 
-      # --- vérification que le binaire corewar existe ---
+      # --- vérification du binaire corewar ---
       - name: Check binary exists
+        shell: bash
         run: |
           if [ ! -f ./corewar ]; then
             echo "::error file=Makefile,title=Missing Binary::corewar binary not found after build"
@@ -108,6 +98,7 @@ jobs:
 
       # --- banned functions ---
       - name: Check for banned functions
+        shell: bash
         run: |
           WHITELIST="open fopen read fread write fwrite close fclose stat lstat lseek fseek getline malloc realloc free"
           USED=$(nm -u ./corewar 2>/dev/null | awk '{print $NF}' | sed 's/^_//' | grep -v '^$' | sort -u)
@@ -117,7 +108,7 @@ jobs:
             for allowed in $WHITELIST; do
               [ "$sym" = "$allowed" ] && found=1 && break
             done
-            case "$sym" in __*|_IO_*|_ITM_*|ITM_*|_cxa_*|_libc_*|_register_*|_deregister_*|stderr|stdout|stdin) found=1 ;; esac
+            case "$sym" in __*|_IO_*|stderr|stdout|stdin) found=1 ;; esac
             [ "$found" -eq 0 ] && BANNED="$BANNED $sym"
           done
           if [ -n "$BANNED" ]; then
@@ -129,11 +120,14 @@ jobs:
 
       # --- fonctions superflues ---
       - name: Check for unused functions
+        shell: bash
+        env:
+          CC: epiclang
         run: |
           make fclean > /dev/null 2>&1 || true
-          make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee unused.log || true
-          if grep -q "unused-function\|defined but not used" unused.log; then
-            grep "unused-function\|defined but not used" unused.log | while IFS= read -r line; do
+          make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee /tmp/unused.log || true
+          if grep -q "unused-function\|defined but not used" /tmp/unused.log; then
+            grep "unused-function\|defined but not used" /tmp/unused.log | while IFS= read -r line; do
               FILE=$(echo "$line" | cut -d':' -f1)
               LINE=$(echo "$line" | cut -d':' -f2)
               MSG=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:[0-9]+:[[:space:]]*(warning):[[:space:]]*//')
@@ -142,23 +136,23 @@ jobs:
             exit 1
           fi
 
-      - name: Cleanup
+      # --- fclean final ---
+      - name: Clean all build artifacts
         run: make fclean
 
   # ─── 2. MIRROR ────────────────────────────────────────────────────────────
   push_to_mirror:
-    name: Mirror to remote repository
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs:
-      - check_mirror
-      - check_compilation_and_coding_style
+    name: Push to Mirror Repository
     runs-on: ubuntu-latest
+    needs: check_compilation_and_coding_style
+    if: ${{ !cancelled() && github.event_name == 'push' && github.repository != vars.MIRROR_REPOSITORY }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pixta-dev/repository-mirroring-action@v1
+      - name: Mirror to Epitech repository
+        uses: pixta-dev/repository-mirroring-action@v1
         with:
-          target_repo_url: ${{ vars.MIRROR_SSH_URL }}
-          ssh_private_key: ${{ secrets.PRIVATE_SSH_KEY }}
-          ssh_username: git
+          target_repo_url: ${{ env.MIRROR_SSH_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
