@@ -1,0 +1,207 @@
+name: Corewar CI Checks
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+
+  # ─── 1. CODING STYLE ──────────────────────────────────────────────────────
+  coding-style:
+    name: Coding Style (banana)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run coding-style checker
+        run: |
+          docker run --rm \
+            -v "$PWD:/mnt/delivery" \
+            ghcr.io/epitech/coding-style-checker:latest \
+            /mnt/delivery /mnt/delivery
+
+      - name: Check for coding-style errors
+        run: |
+          if [ -f coding-style-reports.log ] && [ -s coding-style-reports.log ]; then
+            echo "::error::Coding style errors found:"
+            cat coding-style-reports.log
+            while IFS= read -r line; do
+              file=$(echo "$line" | cut -d: -f1)
+              lineno=$(echo "$line" | cut -d: -f2)
+              rule=$(echo "$line" | cut -d: -f3-)
+              echo "::error file=$file,line=$lineno::$rule"
+            done < coding-style-reports.log
+            exit 1
+          else
+            echo "No coding style errors found."
+          fi
+
+  # ─── 2. BUILD ─────────────────────────────────────────────────────────────
+  build:
+    name: Build (make -Werror)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
+
+      - name: Compile with -Wall -Wextra -Werror
+        run: |
+          make CFLAGS="-Wall -Wextra -Werror"
+          echo "Build succeeded."
+
+      - name: Verify binary exists
+        run: |
+          if [ ! -f ./corewar ]; then
+            echo "::error::Binary 'corewar' not found after build."
+            exit 1
+          fi
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: corewar-binary
+          path: |
+            corewar
+            **/*.o
+          retention-days: 1
+
+      - name: Clean build artifacts
+        run: make clean
+
+  # ─── 3. CHECKREPO ─────────────────────────────────────────────────────────
+  checkrepo:
+    name: Check Repo (no binaries/objects)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run checkrepo
+        run: |
+          docker run --rm \
+            -v "$PWD:/mnt/delivery" \
+            ghcr.io/epitech/coding-style-checker:latest \
+            --checkrepo /mnt/delivery
+
+  # ─── 4. BANNED FUNCTIONS ──────────────────────────────────────────────────
+  banned-functions:
+    name: Banned Functions (nm whitelist)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
+
+      - name: Build project
+        run: make CFLAGS="-Wall -Wextra -Werror"
+
+      - name: Check for banned functions
+        run: |
+          WHITELIST="open fopen read fread write fwrite close fclose stat lstat lseek fseek getline malloc realloc free"
+
+          # Collect undefined external symbols from the binary (calls to libc, etc.)
+          USED=$(nm -u ./corewar 2>/dev/null \
+            | awk '{print $NF}' \
+            | sed 's/^_//' \
+            | grep -v '^$' \
+            | sort -u)
+
+          BANNED=""
+          for sym in $USED; do
+            found=0
+            for allowed in $WHITELIST; do
+              if [ "$sym" = "$allowed" ]; then
+                found=1
+                break
+              fi
+            done
+            # Ignore internal compiler/linker symbols
+            case "$sym" in
+              __*|_IO_*|stderr|stdout|stdin) found=1 ;;
+            esac
+            if [ "$found" -eq 0 ]; then
+              BANNED="$BANNED $sym"
+            fi
+          done
+
+          if [ -n "$BANNED" ]; then
+            echo "::error::Banned/unauthorized functions detected in corewar binary:"
+            for b in $BANNED; do
+              echo "  - $b"
+              echo "::error::Banned function used: $b"
+            done
+            exit 1
+          else
+            echo "All used functions are in the whitelist."
+          fi
+
+  # ─── 5. NO EXTRA FUNCTIONS ────────────────────────────────────────────────
+  no-extra-functions:
+    name: No Extra Functions (unused symbols)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc make binutils
+
+      - name: Build with -Wunused-function
+        run: |
+          make CFLAGS="-Wall -Wextra -Werror -Wunused-function" 2>&1 | tee build_output.txt
+          # -Werror already turns unused-function warnings into errors,
+          # so a successful build means no unused functions.
+          echo "No unused functions detected (build passed with -Wunused-function)."
+
+      - name: Check object files for unreferenced defined symbols
+        run: |
+          # Collect all defined text symbols across object files
+          DEFINED=$(find . -name '*.o' ! -path './bonus/*' \
+            | xargs nm -o 2>/dev/null \
+            | awk '/ T / || / t / {print $3}' \
+            | grep -v '^$' \
+            | sort -u)
+
+          # Collect all undefined (called) symbols across object files
+          CALLED=$(find . -name '*.o' ! -path './bonus/*' \
+            | xargs nm -o 2>/dev/null \
+            | awk '/ U / {print $3}' \
+            | grep -v '^$' \
+            | sort -u)
+
+          # Also add entry point / known roots
+          ROOTS="main"
+
+          EXTRA=""
+          for sym in $DEFINED; do
+            # Skip main and static-linkage helpers starting with underscore
+            case "$sym" in
+              main|_*) continue ;;
+            esac
+            if ! echo "$CALLED $ROOTS" | grep -qw "$sym"; then
+              EXTRA="$EXTRA $sym"
+            fi
+          done
+
+          if [ -n "$EXTRA" ]; then
+            echo "::warning::The following functions are defined but never called from other translation units:"
+            for e in $EXTRA; do
+              echo "  - $e"
+              echo "::warning::Potentially unused function: $e"
+            done
+            # Warn only — some static helpers won't appear in U entries.
+            # Remove 'exit 1' below if you want this to be non-blocking.
+            exit 1
+          else
+            echo "No unreferenced defined functions detected."
+          fi
