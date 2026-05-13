@@ -18,6 +18,7 @@ int main(int argc, char **argv)
         free(main);
         return 84;
     }
+    setup(main);
     free(main);
     return 0;
 }
