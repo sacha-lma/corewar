@@ -7,6 +7,15 @@
 
 #ifndef COREWAR_H
     #define COREWAR_H
-#include "core/core.h"
-#include "op/op.h"
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <string.h>
+    #include <fcntl.h>
+    #include "linked_lists/linked_lists.h"
+    #include "op/op.h"
+    #include "core/core.h"
+    #include "display/display.h"
+    #include "inputs/inputs.h"
+    #include "init/init.h"
 #endif
