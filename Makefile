@@ -32,6 +32,9 @@ debug: fclean $(NAME)
 	valgrind --leak-check=full --track-origins=yes \
 		--log-file=$(LOG_DIR)/valgrind.log ./$(NAME) $(ARGS)
 
+tests_run: re
+	@echo "No tests defined yet"
+
 clean:
 	rm -f $(OBJS)
 
@@ -40,4 +43,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re debug tests_run
