@@ -7,7 +7,17 @@
 
 #include "../../include/corewar.h"
 
-int main(void)
+int main(int argc, char **argv)
 {
+    stock_main_t *main = malloc(sizeof(stock_main_t));
+
+    if (main == NULL)
+        return 84;
+    init(main);
+    if (manage_args(argc, argv, main) == 84) {
+        free(main);
+        return 84;
+    }
+    free(main);
     return 0;
 }
