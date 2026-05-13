@@ -26,13 +26,13 @@ static int add_champion(int *i, char **argv, stock_main_t *main)
     if (champ == NULL)
         return 84;
     champ->path = argv[*i];
-    main->champion_count++;
-    champ->prog_nb = main->pending_prog_nb == -1
-        ? -1 : (unsigned int)main->pending_prog_nb;
-    champ->load_adress = main->pending_load_adress;
-    main->pending_prog_nb = -1;
-    main->pending_load_adress = -1;
-    push_back(&main->champions, champ);
+    main->champ_info.champion_count++;
+    champ->prog_nb = main->champ_info.pending_prog_nb == -1
+        ? -1 : (unsigned int)main->champ_info.pending_prog_nb;
+    champ->load_adress = main->champ_info.pending_load_adress;
+    main->champ_info.pending_prog_nb = -1;
+    main->champ_info.pending_load_adress = -1;
+    push_back(&main->champ_info.champions, champ);
     return 0;
 }
 
