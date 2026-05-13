@@ -27,6 +27,5 @@ int setup(stock_main_t *main)
             __builtin_bswap32(champion->header->prog_size));
         close(fd);
     }
-    free(champion->header);
     return 0;
 }
