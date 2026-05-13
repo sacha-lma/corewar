@@ -13,5 +13,5 @@ void get_load_adress(stock_main_t *main, char **argv, int pos)
         write(2, "./corewar: -a: missing argument\n", 32);
         exit(84);
     }
-    main->pending_load_adress = atoi(argv[pos]);
+    main->champ_info.pending_load_adress = atoi(argv[pos]);
 }
