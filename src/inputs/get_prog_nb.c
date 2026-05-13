@@ -20,5 +20,5 @@ void get_prog_nb(stock_main_t *main, char **argv, int pos)
         write(2, "./corewar: -n: invalid argument\n", 32);
         exit(84);
     }
-    main->pending_prog_nb = prog_nb;
+    main->champ_info.pending_prog_nb = prog_nb;
 }
