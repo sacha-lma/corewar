@@ -7,7 +7,7 @@
 NAME	= corewar
 
 CC	= epiclang
-CFLAGS	= -Wall -Wextra -Werror -Wshadow -Wunreachable-code \
+CFLAGS	= -Wall -Wextra -Werror -Wshadow -Wunreachable-code -Wno-unused-parameter\
 	-Wuninitialized -Wnull-dereference -O3
 IFLAGS	= -I include
 
