@@ -11,7 +11,7 @@
     #define CORE_H
 typedef struct champion_s {
     char *path;
-    unsigned int prog_nb;
+    int prog_nb;
     int load_adress;
 }champion_t;
 typedef struct champ_info_s {
