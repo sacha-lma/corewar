@@ -22,4 +22,5 @@ node_t *merge_sort_merge_list(node_t *left, node_t *right,
     int (*cmp_func)(void *, void *));
 void free_list(node_t **head);
 node_t *get_to_middle(node_t *head);
+void *get_at(node_t *head, int pos);
 #endif
