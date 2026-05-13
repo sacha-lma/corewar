@@ -9,5 +9,6 @@
 
 int setup(stock_main_t *main)
 {
+    update_prog_nbr(main);
     return 0;
 }
