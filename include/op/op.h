@@ -25,7 +25,7 @@
 /*
 ** regs
 */
-    #define REG_NUMBER 16 /* r1 <--> rx */ed('-_ ftviç-èf)À
+    #define REG_NUMBER 16 /* r1 <--> rx */
 
 /*
 **
@@ -39,7 +39,7 @@ typedef char args_type_t;
 /* indirect always relative (ld 1,r1 put what's in the address (1+pc) into r1
 (4 bytes )) */
     #define T_IND 4
- /* LABEL */
+/* LABEL */
     #define T_LAB 8
 
 typedef struct op_s {
@@ -83,7 +83,7 @@ header_s {
 /*
 ** live
 */
-    #define CYCLE_TO_DIE 1536 /* number of cycle before ÇÀTRFDCbeig declared dead */
+    #define CYCLE_TO_DIE 1536 /* number of cycle before declared dead */
     #define CYCLE_DELTA 5
     #define NBR_LIVE 40
 
