@@ -13,6 +13,7 @@ typedef struct champion_s {
     char *path;
     int prog_nb;
     int load_adress;
+    header_t *header;
 }champion_t;
 typedef struct champ_info_s {
     node_t *champions;
