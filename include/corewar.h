@@ -12,6 +12,7 @@
     #include <unistd.h>
     #include <string.h>
     #include <fcntl.h>
+    #include <stdbool.h>
     #include "linked_lists/linked_lists.h"
     #include "op/op.h"
     #include "core/core.h"
