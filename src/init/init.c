@@ -7,13 +7,14 @@
 
 #include "../../include/corewar.h"
 
-void init(stock_main_t *main)
+void init(stock_main_t *main_struct)
 {
-    memset(main->map, 0, MEM_SIZE);
-    main->nb_cycle = 0;
-    main->champ_info.champions = NULL;
-    main->champ_info.pending_prog_nb = -1;
-    main->champ_info.pending_load_adress = -1;
-    main->champ_info.champion_count = 0;
-    main->cycle_to_die = CYCLE_TO_DIE;
+    memset(main_struct->map, 0, MEM_SIZE);
+    main_struct->nb_cycle = -1;
+    main_struct->champ_info.champions = NULL;
+    main_struct->champ_info.pending_prog_nb = -1;
+    main_struct->champ_info.pending_load_adress = -1;
+    main_struct->champ_info.champion_count = 0;
+    main_struct->cycle_to_die = CYCLE_TO_DIE;
+    main_struct->processes = NULL;
 }
