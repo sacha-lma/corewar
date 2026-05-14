@@ -17,4 +17,5 @@ void init(stock_main_t *main_struct)
     main_struct->champ_info.champion_count = 0;
     main_struct->cycle_to_die = CYCLE_TO_DIE;
     main_struct->processes = NULL;
+    main_struct->nb_live = 0;
 }
