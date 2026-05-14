@@ -7,7 +7,7 @@
 
 #include "../../../include/corewar.h"
 
-const fcall_t process_calls[] = {
+const process_call_t process_calls[] = {
     {NULL, NULL}
 };
 
