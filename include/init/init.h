@@ -14,4 +14,5 @@ int setup(stock_main_t *main);
 void update_prog_nbr(stock_main_t *main);
 int prog_sorter(void *a, void *b);
 void champions_loader(stock_main_t *main);
+void set_process(stock_main_t *main, int load_add, champion_t *champion);
 #endif
