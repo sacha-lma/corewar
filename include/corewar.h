@@ -13,10 +13,11 @@
     #include <string.h>
     #include <fcntl.h>
     #include <stdbool.h>
-    #include "linked_lists/linked_lists.h"
+    #include "utils/utils.h"
     #include "op/op.h"
     #include "core/core.h"
     #include "display/display.h"
     #include "inputs/inputs.h"
     #include "init/init.h"
+    #include "core/loop/loop.h"
 #endif
