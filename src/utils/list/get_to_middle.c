@@ -5,7 +5,7 @@
 ** get_to_middle
 */
 
-#include "../../include/corewar.h"
+#include "../../../include/corewar.h"
 
 node_t *get_to_middle(node_t *head)
 {
