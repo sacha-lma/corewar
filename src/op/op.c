@@ -5,7 +5,7 @@
 ** The main instructions
 */
 
-#include "../../include/corewar.h"
+#include ".././include/corewar.h"
 
 const op_t op_tab[] = {
     {"none", 0, {0}, 0, 1, "Nothing"},
