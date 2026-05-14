@@ -5,7 +5,7 @@
 ** merge_sort_merge_list
 */
 
-#include "../../include/corewar.h"
+#include "../../../include/corewar.h"
 
 node_t *merge_sort_merge_list(node_t *left, node_t *right,
     int (*cmp_func)(void *, void *))
