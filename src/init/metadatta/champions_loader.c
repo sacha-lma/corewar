@@ -22,6 +22,7 @@ void champions_loader(stock_main_t *main)
         read(fd, champion->header, sizeof(header_t));
         read(fd, main->map + load_add,
             __builtin_bswap32(champion->header->prog_size));
+        set_process(main, load_add, champion);
         close(fd);
     }
 }
