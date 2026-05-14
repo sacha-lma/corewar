@@ -32,6 +32,7 @@ int champions_loader(stock_main_t *main_struct)
         load_add = MEM_SIZE / main_struct->champ_info.champion_count * i;
         if (champion->load_adress != -1)
             load_add = champion->load_adress % MEM_SIZE;
+        champion->load_adress = load_add;
         fd = open(champion->path, O_RDONLY);
         if (fd == -1)
             return 84;
