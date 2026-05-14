@@ -30,7 +30,7 @@ typedef struct process_s {
 }process_t;
 typedef struct stock_maint_s {
     unsigned char map[MEM_SIZE];
-    unsigned int nb_cycle;
+    int nb_cycle;
     unsigned int cycle_to_die;
     champ_info_t champ_info;
     node_t *processes;
