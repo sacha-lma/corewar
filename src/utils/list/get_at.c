@@ -5,7 +5,7 @@
 ** get_at
 */
 
-#include "../../include/corewar.h"
+#include "../../../include/corewar.h"
 
 void *get_at(node_t *head, int pos)
 {
