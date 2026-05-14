@@ -7,7 +7,7 @@
 
 #include "../../include/corewar.h"
 
-void get_cycles(stock_main_t *main, char **argv, int pos)
+void get_cycles(stock_main_t *main_struct, char **argv, int pos)
 {
     int cycles;
 
@@ -20,5 +20,5 @@ void get_cycles(stock_main_t *main, char **argv, int pos)
         write(2, "./corewar: -dump: invalid argument\n", 35);
         exit(84);
     }
-    main->nb_cycle = (unsigned int)cycles;
+    main_struct->nb_cycle = (unsigned int)cycles;
 }
