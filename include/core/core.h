@@ -39,4 +39,8 @@ typedef struct fcall_s {
     char *name;
     void (*func)(stock_main_t *, char **args, int pos);
 }fcall_t;
+typedef struct process_call_s {
+    char *name;
+    void (*func)(stock_main_t *);
+} process_call_t;
 #endif
