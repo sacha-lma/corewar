@@ -7,7 +7,7 @@
 
 #include "../../include/corewar.h"
 
-void print_help(stock_main_t *main, char **argv, int pos)
+void print_help(stock_main_t *main_struct, char **argv, int pos)
 {
     printf("USAGE\n");
     printf("./corewar [-dump nbr_cycle] [[-n prog_number] ");
