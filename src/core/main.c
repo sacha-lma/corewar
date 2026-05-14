@@ -9,16 +9,17 @@
 
 int main(int argc, char **argv)
 {
-    stock_main_t *main = malloc(sizeof(stock_main_t));
+    stock_main_t *main_struct = malloc(sizeof(stock_main_t));
 
-    if (main == NULL)
+    if (main_struct == NULL)
         return 84;
-    init(main);
-    if (manage_args(argc, argv, main) == 84) {
-        free(main);
+    init(main_struct);
+    if (manage_args(argc, argv, main_struct) == 84) {
+        free(main_struct);
         return 84;
     }
-    setup(main);
-    free(main);
+    setup(main_struct);
+    loop(main_struct);
+    free(main_struct);
     return 0;
 }
