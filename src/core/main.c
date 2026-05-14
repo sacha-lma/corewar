@@ -15,11 +15,14 @@ int main(int argc, char **argv)
         return 84;
     init(main_struct);
     if (manage_args(argc, argv, main_struct) == 84) {
-        free(main_struct);
+        closup(main_struct);
         return 84;
     }
-    setup(main_struct);
+    if (setup(main_struct) == 84) {
+        closup(main_struct);
+        return 84;
+    }
     loop(main_struct);
-    free(main_struct);
+    closup(main_struct);
     return 0;
 }
