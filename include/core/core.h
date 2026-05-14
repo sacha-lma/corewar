@@ -5,10 +5,11 @@
 ** core
 */
 
-#include "../corewar.h"
-
 #ifndef CORE_H
     #define CORE_H
+    #include <stdbool.h>
+    #include "op/op.h"
+    #include "utils/linked_lists/linked_lists.h"
 typedef struct champion_s {
     char *path;
     int prog_nb;
@@ -34,10 +35,11 @@ typedef struct stock_maint_s {
     unsigned int cycle_to_die;
     champ_info_t champ_info;
     node_t *processes;
+    int nb_live;
 } stock_main_t;
 typedef struct fcall_s {
     char *name;
-    void (*func)(stock_main_t *, char **args, int pos);
+    int (*func)(stock_main_t *, char **args, int pos);
 }fcall_t;
 typedef struct process_call_s {
     void (*func)(stock_main_t *, process_t *);
