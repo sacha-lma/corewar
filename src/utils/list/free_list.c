@@ -5,7 +5,7 @@
 ** free_list
 */
 
-#include "../../include/corewar.h"
+#include "../../../include/corewar.h"
 
 void free_list(node_t **head)
 {
