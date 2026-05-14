@@ -19,5 +19,6 @@
     #include "display/display.h"
     #include "inputs/inputs.h"
     #include "init/init.h"
+    #include "core/opperations/opperations.h"
     #include "core/loop/loop.h"
 #endif
