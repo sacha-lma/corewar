@@ -20,15 +20,15 @@ static int add_champion(int *i, char **argv, stock_main_t *main_struct)
 {
     champion_t *champ;
 
-    if (access(argv[*i], F_OK) != 0 || strstr(argv[*i], ".cor") == NULL)
+    if (access(argv[*i], F_OK) != 0 || strlen(argv[*i]) < 4 ||
+        strcmp(argv[*i] + strlen(argv[*i]) - 4, ".cor") != 0)
         return 84;
     champ = malloc(sizeof(champion_t));
     if (champ == NULL)
         return 84;
     champ->path = argv[*i];
     main_struct->champ_info.champion_count++;
-    champ->prog_nb = main_struct->champ_info.pending_prog_nb == -1
-        ? -1 : (unsigned int)main_struct->champ_info.pending_prog_nb;
+    champ->prog_nb = main_struct->champ_info.pending_prog_nb;
     champ->load_adress = main_struct->champ_info.pending_load_adress;
     main_struct->champ_info.pending_prog_nb = -1;
     main_struct->champ_info.pending_load_adress = -1;
@@ -40,7 +40,8 @@ static int call_func(int *i, int j, char **argv, stock_main_t *main_struct)
 {
     if (*i + 1 >= my_array_len(argv))
         return 84;
-    fcalls[j].func(main_struct, argv, *i + 1);
+    if (fcalls[j].func(main_struct, argv, *i + 1) == 84)
+        return 84;
     (*i)++;
     return 0;
 }
