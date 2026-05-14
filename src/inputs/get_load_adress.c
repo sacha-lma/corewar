@@ -7,11 +7,11 @@
 
 #include "../../include/corewar.h"
 
-void get_load_adress(stock_main_t *main, char **argv, int pos)
+void get_load_adress(stock_main_t *main_struct, char **argv, int pos)
 {
     if (argv[pos] == NULL) {
         write(2, "./corewar: -a: missing argument\n", 32);
         exit(84);
     }
-    main->champ_info.pending_load_adress = atoi(argv[pos]);
+    main_struct->champ_info.pending_load_adress = atoi(argv[pos]);
 }
