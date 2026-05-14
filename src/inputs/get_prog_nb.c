@@ -7,7 +7,7 @@
 
 #include "../../include/corewar.h"
 
-void get_prog_nb(stock_main_t *main, char **argv, int pos)
+void get_prog_nb(stock_main_t *main_struct, char **argv, int pos)
 {
     int prog_nb;
 
@@ -20,5 +20,5 @@ void get_prog_nb(stock_main_t *main, char **argv, int pos)
         write(2, "./corewar: -n: invalid argument\n", 32);
         exit(84);
     }
-    main->champ_info.pending_prog_nb = prog_nb;
+    main_struct->champ_info.pending_prog_nb = prog_nb;
 }
