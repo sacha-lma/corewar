@@ -5,7 +5,7 @@
 ** merge_sort_list
 */
 
-#include "../../include/corewar.h"
+#include "../../../include/corewar.h"
 
 node_t *merge_sort_lists(node_t **head, int (*cmp_func)(void *, void *))
 {
@@ -13,7 +13,7 @@ node_t *merge_sort_lists(node_t **head, int (*cmp_func)(void *, void *))
     node_t *left;
     node_t *right;
 
-    if (head == NULL || (*head)->next == NULL)
+    if (head == NULL || *head == NULL || (*head)->next == NULL)
         return *head;
     midle = get_to_middle(*head);
     left = *head;
