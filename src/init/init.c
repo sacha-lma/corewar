@@ -9,7 +9,8 @@
 
 void init(stock_main_t *main_struct)
 {
-    memset(main_struct->map, 0, MEM_SIZE);
+    for (int i = 0; i < MEM_SIZE; i++)
+        main_struct->map[i] = 0;
     main_struct->nb_cycle = -1;
     main_struct->champ_info.champions = NULL;
     main_struct->champ_info.pending_prog_nb = -1;
