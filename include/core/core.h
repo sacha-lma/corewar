@@ -7,9 +7,6 @@
 
 #ifndef CORE_H
     #define CORE_H
-    #include <stdbool.h>
-    #include "op/op.h"
-    #include "utils/linked_lists/linked_lists.h"
 typedef struct champion_s {
     char *path;
     int prog_nb;
@@ -27,6 +24,7 @@ typedef struct process_s {
     int reg[REG_NUMBER];
     bool carry;
     int last_live;
+    int champion_nb;
 }process_t;
 typedef struct stock_maint_s {
     unsigned char map[MEM_SIZE];
@@ -36,6 +34,7 @@ typedef struct stock_maint_s {
     champ_info_t champ_info;
     node_t *processes;
     int nb_live;
+    int last_live_champion;
 } stock_main_t;
 typedef struct fcall_s {
     char *name;
