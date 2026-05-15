@@ -14,7 +14,8 @@ int set_process(stock_main_t *main_struct, int load_add, champion_t *champion)
     if (!process)
         return 84;
     process->pc = load_add;
-    memset(process->reg, 0, REG_SIZE * REG_NUMBER);
+    for (int i = 0; i < REG_NUMBER; i++)
+        process->reg[i] = 0;
     process->reg[0] = -champion->prog_nb;
     process->carry = false;
     process->last_live = 0;
