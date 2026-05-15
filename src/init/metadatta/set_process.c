@@ -18,6 +18,7 @@ int set_process(stock_main_t *main_struct, int load_add, champion_t *champion)
     process->reg[0] = -champion->prog_nb;
     process->carry = false;
     process->last_live = 0;
+    process->champion_nb = champion->prog_nb;
     push_back(&main_struct->processes, process);
     return 0;
 }
