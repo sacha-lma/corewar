@@ -9,9 +9,9 @@
 
 int get_name_len(char *name)
 {
-    int len = (int)strlen(name);
+    int len = 0;
 
-    while (len > 0 && name[len - 1] == ' ')
-        len--;
+    for (; name[len] != '\0'; len++);
+    for (; len > 0 && name[len - 1] == ' '; len--);
     return len;
 }
