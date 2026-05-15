@@ -22,7 +22,7 @@ int main(int argc, char **argv)
         closup(main_struct);
         return 84;
     }
-    loop(main_struct);
+    while (loop(main_struct) == 0);
     closup(main_struct);
     return 0;
 }
