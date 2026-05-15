@@ -36,8 +36,6 @@ void call_op(stock_main_t *main_struct)
         temp = temp->next) {
         current_process = temp->data;
         opcode = main_struct->map[current_process->pc % MEM_SIZE];
-        printf("Process at PC %d executing opcode %d\n",
-            current_process->pc, opcode);
         if (opcode >= 1 && opcode <= 16)
             process_calls[opcode - 1].func(main_struct, current_process);
         else
