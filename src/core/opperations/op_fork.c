@@ -27,3 +27,4 @@ void op_fork(stock_main_t *main_struct, process_t *process)
     push_back(&main_struct->processes, child);
     process->pc = (process->pc + 3) % MEM_SIZE;
 }
+
