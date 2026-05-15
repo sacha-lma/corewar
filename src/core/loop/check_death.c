@@ -7,6 +7,20 @@
 
 #include "../../../include/corewar.h"
 
+static void write_number(int value)
+{
+    char c;
+
+    if (value < 0) {
+        write(1, "-", 1);
+        value = -value;
+    }
+    if (value >= 10)
+        write_number(value / 10);
+    c = (char)('0' + (value % 10));
+    write(1, &c, 1);
+}
+
 static void delete_process(stock_main_t *main_struct, int pos)
 {
     process_t *process = get_at(main_struct->processes, pos);
@@ -18,15 +32,18 @@ static void delete_process(stock_main_t *main_struct, int pos)
 static void print_winner(stock_main_t *main_struct)
 {
     champion_t *champ = NULL;
+    int name_len;
 
     for (node_t *temp = main_struct->champ_info.champions; temp != NULL;
         temp = temp->next) {
         champ = temp->data;
         if (champ->prog_nb == main_struct->last_live_champion) {
-            dprintf(1, "The player %d(%.*s)has won.\n",
-                champ->prog_nb,
-                get_name_len(champ->header->prog_name),
-                champ->header->prog_name);
+            name_len = get_name_len(champ->header->prog_name);
+            write(1, "The player ", 11);
+            write_number(champ->prog_nb);
+            write(1, "(", 1);
+            write(1, champ->header->prog_name, name_len);
+            write(1, ")has won.\n", 10);
             return;
         }
     }
