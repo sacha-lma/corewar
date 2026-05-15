@@ -29,14 +29,14 @@ ARGS	= tests/tests_files/abel.cor -n 6 tests/tests_files/bill.cor tests/tests_fi
 
 run: all
 	@mkdir -p $(LOG_DIR)
-	./$(NAME) $(ARGS) > $(LOG_DIR)/output_$(TIMESTAMP).log
+	./$(NAME) $(ARGS) > $(LOG_DIR)/outputs/output_$(TIMESTAMP).log
 
 debug: CFLAGS += -g3
 debug: fclean $(NAME)
 	@mkdir -p $(LOG_DIR)
 	valgrind --leak-check=full --track-origins=yes \
-		--log-file=$(LOG_DIR)/valgrind_$(TIMESTAMP).log \
-		./$(NAME) $(ARGS) > $(LOG_DIR)/output_$(TIMESTAMP).log
+		--log-file=$(LOG_DIR)/debugs/valgrind_$(TIMESTAMP).log \
+		./$(NAME) $(ARGS) > $(LOG_DIR)/outputs/output_$(TIMESTAMP).log
 
 tests_run: re
 	@echo "No tests defined yet"
