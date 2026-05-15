@@ -23,5 +23,5 @@ void op_live(stock_main_t *main_struct, process_t *process)
             break;
         }
     }
-    process->pc = (process->pc + 5) % MEM_SIZE;
+    process->pc = (process->pc + OP_LIVE_SIZE) % MEM_SIZE;
 }
