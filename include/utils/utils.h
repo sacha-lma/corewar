@@ -9,5 +9,6 @@
     #define UTILS_H
     #include "len/len.h"
     #include "linked_lists/linked_lists.h"
-    #include "math/math.h"
+    #include "extraction/exraction.h"
+    #include "insertion/insertion.h"
 #endif
