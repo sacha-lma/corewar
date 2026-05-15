@@ -24,13 +24,17 @@ void check_deaths(stock_main_t *main_struct)
     for (node_t *temp = main_struct->processes; temp; temp = next) {
         next = temp->next;
         process = temp->data;
-        if (main_struct->nb_cycle - process->last_live >
+        if (main_struct->nb_cycle - process->last_live >=
             (int)main_struct->cycle_to_die)
             delete_process(main_struct, pos);
         else
             pos++;
     }
-    if (main_struct->nb_live >= NBR_LIVE)
-        main_struct->cycle_to_die -= CYCLE_DELTA;
+    if (main_struct->nb_live >= NBR_LIVE) {
+        if (main_struct->cycle_to_die > CYCLE_DELTA)
+            main_struct->cycle_to_die -= CYCLE_DELTA;
+        else
+            main_struct->cycle_to_die = 1;
+    }
     main_struct->nb_live = 0;
 }
