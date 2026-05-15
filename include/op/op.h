@@ -87,4 +87,23 @@ header_s {
     #define CYCLE_DELTA 5
     #define NBR_LIVE 40
 
+/*
+ ** opperations sizes
+ */
+    #define OP_LIVE_SIZE 5
+#define OP_LD_SIZE 3
+#define OP_ST_SIZE 3
+#define OP_ADD_SIZE 4
+#define OP_SUB_SIZE 4
+#define OP_AND_SIZE 4
+#define OP_OR_SIZE 4
+#define OP_XOR_SIZE 4
+#define OP_ZJMP_SIZE 3
+#define OP_LDI_SIZE 4
+#define OP_STI_SIZE 4
+#define OP_FORK_SIZE 3
+#define OP_LLD_SIZE 3
+#define OP_LLDI_SIZE 4
+#define OP_LFORK_SIZE 3
+#define OP_PRINT_SIZE 3
 #endif /* OP_H_ */
