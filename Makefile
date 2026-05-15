@@ -24,7 +24,7 @@ $(NAME): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
-ARGS	=
+ARGS	= tests/tests_files/abel.cor -n 6 tests/tests_files/abel.cor tests/tests_files/abel.cor tests/tests_files/abel.cor > output
 
 debug: CFLAGS += -g3
 debug: fclean $(NAME)
@@ -36,7 +36,7 @@ tests_run: re
 	@echo "No tests defined yet"
 
 clean:
-	rm -rf $(OBJS) log
+	rm -rf $(OBJS) log output
 
 fclean: clean
 	rm -f $(NAME)
