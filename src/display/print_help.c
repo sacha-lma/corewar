@@ -29,7 +29,10 @@ static void print_desc(void)
 
 int print_help(stock_main_t *main_struct, char **argv, int pos)
 {
+    (void)main_struct;
+    (void)argv;
+    (void)pos;
     print_usage();
     print_desc();
-    exit(0);
+    return 1;
 }
