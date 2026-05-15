@@ -36,7 +36,7 @@ tests_run: re
 	@echo "No tests defined yet"
 
 clean:
-	rm -f $(OBJS)
+	rm -rf $(OBJS) log
 
 fclean: clean
 	rm -f $(NAME)
