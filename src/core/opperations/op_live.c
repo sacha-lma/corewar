@@ -7,6 +7,31 @@
 
 #include "../../../include/corewar.h"
 
+static void write_number(int value)
+{
+    char c;
+
+    if (value < 0) {
+        write(1, "-", 1);
+        value = -value;
+    }
+    if (value >= 10)
+        write_number(value / 10);
+    c = (char)('0' + (value % 10));
+    write(1, &c, 1);
+}
+
+static void print_alive_message(champion_t *champ)
+{
+    int name_len = get_name_len(champ->header->prog_name);
+
+    write(1, "The player ", 11);
+    write_number(champ->prog_nb);
+    write(1, "(", 1);
+    write(1, champ->header->prog_name, name_len);
+    write(1, " )is alive.\n", 12);
+}
+
 void op_live(stock_main_t *main_struct, process_t *process)
 {
     int champion_nb = read_int_from_map(main_struct->map, process->pc + 1);
@@ -16,10 +41,7 @@ void op_live(stock_main_t *main_struct, process_t *process)
         temp = temp->next) {
         champ = temp->data;
         if (champ->prog_nb == -champion_nb) {
-            dprintf(1, "The player %d(%.*s )is alive.\n",
-                champ->prog_nb,
-                get_name_len(champ->header->prog_name),
-                champ->header->prog_name);
+            print_alive_message(champ);
             main_struct->nb_live++;
             process->last_live = main_struct->nb_cycle;
             main_struct->last_live_champion = champ->prog_nb;
