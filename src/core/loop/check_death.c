@@ -34,8 +34,6 @@ static void print_winner(stock_main_t *main_struct)
 
 static void update_cycle_to_die(stock_main_t *main_struct)
 {
-    if (main_struct->nb_live < NBR_LIVE)
-        return;
     if (main_struct->cycle_to_die > CYCLE_DELTA)
         main_struct->cycle_to_die -= CYCLE_DELTA;
     else
