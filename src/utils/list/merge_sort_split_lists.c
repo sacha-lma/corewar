@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** organized
 ** File description:
-** merge_sort_list
+** merge_sort_lists — splits a list in half and recursively sorts both halves
 */
 
 #include "../../../include/corewar.h"

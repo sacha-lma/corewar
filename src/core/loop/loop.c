@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** loop
+** VM loop — advances one cycle and triggers death-checks
 */
 
 #include "../../../include/corewar.h"

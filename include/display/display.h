@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** display
+** print_help function declaration
 */
 
 #ifndef DISPLAY_H

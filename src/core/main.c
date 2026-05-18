@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** main
+** main entry point — init state, parse args, run the VM loop
 */
 
 #include "../../include/corewar.h"

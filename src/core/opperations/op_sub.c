@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_sub
+** op_sub (0x05) — subtracts two registers and stores the result
 */
 
 #include "../../../include/corewar.h"

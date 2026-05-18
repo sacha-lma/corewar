@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** bootstrap
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** get_at
+** get_at — returns the data pointer at a given index in a linked list
 */
 
 #include "../../../include/corewar.h"

@@ -46,6 +46,12 @@ tests_run:
 	-./tests_run
 	gcovr -r . --exclude 'tests/.*' --print-summary
 
+functional_tests: all
+	bash tests/functional_tests.sh
+
+bonus:
+	$(MAKE) -C bonus
+
 clean:
 	rm -rf $(OBJS) output tests_run *.gcda *.gcno src/**/*.gcda src/**/*.gcno \
 		src/**/**/*.gcda src/**/**/*.gcno
@@ -55,4 +61,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re run debug tests_run
+.PHONY: all clean fclean re run debug tests_run functional_tests bonus

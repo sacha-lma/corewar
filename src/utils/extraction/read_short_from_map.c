@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** read_short_from_map
+** read_short_from_map — big-endian 16-bit read with wrap-around
 */
 
 #include "../../../include/corewar.h"

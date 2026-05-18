@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_zjmp
+** op_zjmp (0x09) — jumps to pc + offset % IDX_MOD if carry is set
 */
 
 #include "../../../include/corewar.h"

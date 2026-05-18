@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_xor
+** op_xor (0x0C) — bitwise XOR of two args stored in a register
 */
 
 #include "../../../include/corewar.h"

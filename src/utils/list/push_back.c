@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** bootstrap
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** push_back
+** push_back — appends a new node with a given data pointer to a linked list
 */
 
 #include "../../../include/corewar.h"

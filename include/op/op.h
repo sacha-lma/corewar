@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** asm
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** Header for the operations
+** op_t, header_t, all VM constants (MEM_SIZE, CYCLE_TO_DIE…)
 */
 
 #ifndef OP_H_

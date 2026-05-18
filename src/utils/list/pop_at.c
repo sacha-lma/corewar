@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** bootstrap
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** pop_choosen
+** pop_at — unlinks and frees the node at a given index
 */
 
 #include "../../../include/corewar.h"

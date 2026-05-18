@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** insertion
+** arena write-insertion function declarations
 */
 
 #include "../../../include/corewar.h"

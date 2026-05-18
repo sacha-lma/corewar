@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** G-AIA-200-NCE-2-1-cuddle-5
 ** File description:
-** Linked list node structure and manipulation function prototypes
+** node_t type and linked-list function declarations
 */
 /**
  * @file linked_lists.h

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** setup
+** setup — assigns prog numbers, sorts champions, loads .cor files
 */
 
 #include "../../include/corewar.h"

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** call_op
+** dispatches the current opcode for each active process
 */
 
 #include "../../../include/corewar.h"

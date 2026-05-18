@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_sti
+** op_sti (0x0B) — stores a register at an indirect-indexed address
 */
 
 #include "../../../include/corewar.h"

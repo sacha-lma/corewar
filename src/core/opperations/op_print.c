@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_print
+** op_print (0x10) — prints the ASCII char from a register value
 */
 
 #include "../../../include/corewar.h"

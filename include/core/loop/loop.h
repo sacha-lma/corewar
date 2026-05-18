@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** loop
+** loop, call_op, check_deaths — function declarations
 */
 
 #ifndef LOOP_H_

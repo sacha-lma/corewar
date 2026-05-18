@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** math
+** arena read-extraction function declarations
 */
 
 #ifndef EXRACTION_H

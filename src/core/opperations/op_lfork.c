@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_lfork
+** op_lfork (0x0F) — long fork: new process at pc + offset (no IDX_MOD)
 */
 
 #include "../../../include/corewar.h"

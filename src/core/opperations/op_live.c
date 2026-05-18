@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_live
+** op_live (0x01) — declares a champion alive, updates live counter
 */
 
 #include "../../../include/corewar.h"

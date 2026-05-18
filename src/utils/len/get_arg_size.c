@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** get_arg_size
+** get_arg_size — returns the byte size of an argument by type and index flag
 */
 
 #include "../../../include/corewar.h"

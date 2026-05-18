@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** set_process
+** set_process — allocates and registers a champion's initial process
 */
 
 #include "../../../include/corewar.h"

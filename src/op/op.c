@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** asm
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** The main instructions
+** op_tab — opcode table with all 16 instruction descriptors
 */
 
 #include ".././include/corewar.h"

@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
-** bootstrap
+** EPITECH PROJECT, 2026
+** corewar
 ** File description:
-** pop_front
+** pop_front — unlinks and frees the head node of a linked list
 */
 
 #include "../../../include/corewar.h"

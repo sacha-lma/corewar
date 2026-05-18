@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** my_array_len
+** my_array_len — returns the length of a NULL-terminated pointer array
 */
 
 #include "../../../include/corewar.h"

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** get_cycles
+** get_cycles — parses the -dump argument and sets the initial cycle counter
 */
 
 #include "../../include/corewar.h"

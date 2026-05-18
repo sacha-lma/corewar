@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** corewar
+** top-level header — aggregates all module includes
 */
 
 #ifndef COREWAR_H

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_lldi
+** op_lldi (0x0E) — long indirect-indexed load without IDX_MOD
 */
 
 #include "../../../include/corewar.h"

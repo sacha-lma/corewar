@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_and
+** op_and (0x0A) — bitwise AND of two args stored in a register
 */
 
 #include "../../../include/corewar.h"

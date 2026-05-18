@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** core
+** core types: champion_t, process_t, stock_main_t, fcall_t
 */
 
 #ifndef CORE_H

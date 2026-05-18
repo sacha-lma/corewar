@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** closup
+** closup — frees all heap memory owned by stock_main_t
 */
 
 #include "../../include/corewar.h"

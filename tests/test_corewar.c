@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** unit tests (Criterion)
+** Criterion unit tests covering all corewar modules
 */
 
 #include <criterion/criterion.h>

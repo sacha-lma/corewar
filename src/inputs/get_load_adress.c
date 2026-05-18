@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** get_load_adress
+** get_load_adress — parses -a and stores the pending load address
 */
 
 #include "../../include/corewar.h"

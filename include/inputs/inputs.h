@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** inputs
+** argument-parsing function declarations
 */
 
 #ifndef INPUTS_H

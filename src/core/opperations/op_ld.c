@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_ld
+** op_ld (0x02) — loads a direct or indirect value into a register
 */
 
 #include "../../../include/corewar.h"

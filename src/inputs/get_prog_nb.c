@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** get_prog_nb
+** get_prog_nb — parses the -n argument and stores the pending prog number
 */
 
 #include "../../include/corewar.h"

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** write_int_to_map
+** write_int_to_map — big-endian 32-bit write with wrap-around
 */
 
 #include "../../../include/corewar.h"

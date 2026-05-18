@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** champions_loader
+** champions_loader — reads .cor binaries into the arena and spawns processes
 */
 
 #include "../../../include/corewar.h"

@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** organized
 ** File description:
-** get_to_middle
+** get_to_middle — returns the middle node of a linked list
 */
 
 #include "../../../include/corewar.h"

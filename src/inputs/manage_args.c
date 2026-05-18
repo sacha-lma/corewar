@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** manage_args
+** manage_args — iterates argv, dispatches flags and champion paths
 */
 
 #include "../../include/corewar.h"

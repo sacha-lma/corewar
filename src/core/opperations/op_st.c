@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_st
+** op_st (0x03) — stores a register value into a register or memory
 */
 
 #include "../../../include/corewar.h"

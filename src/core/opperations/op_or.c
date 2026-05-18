@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_or
+** op_or (0x0B) — bitwise OR of two args stored in a register
 */
 
 #include "../../../include/corewar.h"

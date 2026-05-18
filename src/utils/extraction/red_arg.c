@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** red_arg
+** read_arg — reads one instruction argument based on type and index flag
 */
 
 #include "../../../include/corewar.h"

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** init
+** init, setup, closup and metadata function declarations
 */
 
 #ifndef INIT_H

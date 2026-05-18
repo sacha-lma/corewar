@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** opperations
+** op_* function declarations for all 16 VM opcodes
 */
 
 #ifndef OPERATIONS_H

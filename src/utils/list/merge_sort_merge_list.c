@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** organized
 ** File description:
-** merge_sort_merge_list
+** merge_sort_merge_list — merges two sorted linked lists with a comparator
 */
 
 #include "../../../include/corewar.h"

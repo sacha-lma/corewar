@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_fork
+** op_fork (0x0C) — spawns a new process at pc + offset % IDX_MOD
 */
 
 #include "../../../include/corewar.h"

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** update_prog
+** update_prog_nbr — auto-assigns prog numbers to unset champions
 */
 
 #include "../../../include/corewar.h"

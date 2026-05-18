@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** prog_sorter
+** prog_sorter — comparator for sorting champions by prog_nb
 */
 
 #include "../../../include/corewar.h"

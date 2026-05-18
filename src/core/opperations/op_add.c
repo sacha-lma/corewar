@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_add
+** op_add (0x04) — adds two registers and stores the result
 */
 
 #include "../../../include/corewar.h"

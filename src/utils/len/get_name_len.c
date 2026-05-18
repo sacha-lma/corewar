@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** get_name_len
+** get_name_len — returns champion name length, stripping trailing spaces
 */
 
 #include "../../../include/corewar.h"

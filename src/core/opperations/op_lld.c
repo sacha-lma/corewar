@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_lld
+** op_lld (0x0D) — long load: indirect address without IDX_MOD
 */
 
 #include "../../../include/corewar.h"

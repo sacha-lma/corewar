@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** utils
+** aggregates all utility sub-headers
 */
 
 #ifndef UTILS_H

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** len
+** size and length helper function declarations
 */
 
 #ifndef LEN_H

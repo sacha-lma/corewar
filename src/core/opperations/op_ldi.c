@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** op_ldi
+** op_ldi (0x0A) — loads an indirect-indexed value into a register
 */
 
 #include "../../../include/corewar.h"

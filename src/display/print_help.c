@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** corewar
 ** File description:
-** print_help
+** print_help — prints usage and flag descriptions to stdout
 */
 
 #include "../../include/corewar.h"
