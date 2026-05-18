@@ -30,7 +30,10 @@ void call_op(stock_main_t *main_struct)
 {
     process_t *current_process = NULL;
     unsigned char opcode = 0;
+    node_t *stop_after = NULL;
 
+    for (node_t *t = main_struct->processes; t != NULL; t = t->next)
+        stop_after = t;
     for (node_t *temp = main_struct->processes;
         temp != NULL;
         temp = temp->next) {
@@ -40,5 +43,7 @@ void call_op(stock_main_t *main_struct)
             process_calls[opcode - 1].func(main_struct, current_process);
         else
             current_process->pc = (current_process->pc + 1) % MEM_SIZE;
+        if (temp == stop_after)
+            break;
     }
 }
