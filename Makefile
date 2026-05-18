@@ -7,12 +7,14 @@
 NAME	= corewar
 
 CC	= epiclang
+TEST_CC	?= gcc
 CFLAGS	= -Wall -Wextra -Werror -Wshadow -Wunreachable-code -Wno-unused-parameter\
 	-Wuninitialized -Wnull-dereference -O3
 IFLAGS	= -I include
 
 SRCS	= $(shell find src/ -name "*.c")
 OBJS	= $(SRCS:.c=.o)
+TEST_SRCS	= $(filter-out src/core/main.c, $(SRCS)) tests/test_corewar.c
 
 LOG_DIR		= log
 TIMESTAMP	= $(shell date +%Y-%m-%d_%H-%M-%S)
@@ -38,11 +40,15 @@ debug: fclean $(NAME)
 		--log-file=$(LOG_DIR)/debugs/valgrind_$(TIMESTAMP).log \
 		./$(NAME) $(ARGS) > $(LOG_DIR)/outputs/output_$(TIMESTAMP).log
 
-tests_run: re
-	@echo "No tests defined yet"
+tests_run:
+	$(TEST_CC) $(CFLAGS) -g3 --coverage -Wno-unused-result $(IFLAGS) \
+		-o tests_run $(TEST_SRCS) -lcriterion
+	-./tests_run
+	gcovr -r . --exclude 'tests/.*' --print-summary
 
 clean:
-	rm -rf $(OBJS) output
+	rm -rf $(OBJS) output tests_run *.gcda *.gcno src/**/*.gcda src/**/*.gcno \
+		src/**/**/*.gcda src/**/**/*.gcno
 
 fclean: clean
 	rm -f $(NAME)
